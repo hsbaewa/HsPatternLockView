@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <kr.co.hs.view.hspatternlockview.HsPatternLockView
+        xmlns:lockview="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pattern"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        lockview:LOCK_COLOR="#fff"
+        lockview:WRONG_COLOR="#ff0000"
+        lockview:CORRECT_COLOR="#00ff00"/>
+</LinearLayout>
