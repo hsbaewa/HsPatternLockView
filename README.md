@@ -23,3 +23,18 @@ public class MainFragment extends HsPatternLockFragment{
     }
 }
 </code></pre>
+
+2. Activity 추가
+<pre><code>
+//HsPatternLockActivity 상속
+public class MainActivity extends HsPatternLockActivity {
+    @Override
+    public void onPatternDetected(List<HsPatternLockView.Cell> pattern, String SimplePattern) {
+        super.onPatternDetected(pattern, SimplePattern);
+
+        //패턴 일치 체크 후 잠금 해제
+        doUnLock();
+
+    }
+}
+</code></pre>

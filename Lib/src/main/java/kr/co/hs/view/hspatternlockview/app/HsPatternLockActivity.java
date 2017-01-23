@@ -1,6 +1,5 @@
 package kr.co.hs.view.hspatternlockview.app;
 
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -8,7 +7,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import kr.co.hs.app.HsFragment;
+import kr.co.hs.app.HsActivity;
 import kr.co.hs.view.hspatternlockview.HsPatternLockView;
 import kr.co.hs.view.hspatternlockview.R;
 
@@ -18,7 +17,7 @@ import kr.co.hs.view.hspatternlockview.R;
  * 패키지명 : kr.co.hs.view.hspatternlockview.app
  */
 
-public abstract class HsPatternLockFragment extends HsFragment implements HsPatternLockView.OnPatternListener{
+public class HsPatternLockActivity extends HsActivity implements HsPatternLockView.OnPatternListener{
 
     private LinearLayout mLinearLayoutContent;
     private LinearLayout mLinearLayoutPattern;
@@ -28,7 +27,7 @@ public abstract class HsPatternLockFragment extends HsFragment implements HsPatt
 
 
     @Override
-    protected void setContentView(int layoutId) {
+    public void setContentView(int layoutId) {
         super.setContentView(R.layout.fragment_app_patternlockfragment);
         mLinearLayoutContent = (LinearLayout) findViewById(R.id.LinearLayoutContents);
         mLinearLayoutPattern = (LinearLayout) findViewById(R.id.LinearLayoutPattern);

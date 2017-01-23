@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+             xmlns:lockview="http://schemas.android.com/apk/res-auto"
+             android:orientation="vertical"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/LinearLayoutContents"
@@ -33,6 +34,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:foregroundGravity="bottom"
+            lockview:LOCK_COLOR="@color/colorLock"
+            lockview:WRONG_COLOR="@color/colorFailed"
+            lockview:CORRECT_COLOR="@color/colorSuccess"
             />
 
     </LinearLayout>

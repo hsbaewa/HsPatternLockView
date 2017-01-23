@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorLock">@color/colorGrey700</color>
+    <color name="colorFailed">@color/colorRed500</color>
+    <color name="colorSuccess">@color/colorGreen400</color>
+</resources>

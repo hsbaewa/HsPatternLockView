@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import kr.co.hs.view.hspatternlockview.HsPatternLockView;
+import kr.co.hs.view.hspatternlockview.app.HsPatternLockActivity;
 import kr.co.hs.view.hspatternlockview.app.HsPatternLockFragment;
 
 /**
@@ -22,7 +24,7 @@ import kr.co.hs.view.hspatternlockview.app.HsPatternLockFragment;
  * 패키지명 : kr.co.hs.view.hspatternlockview.sample
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends HsPatternLockActivity {
 
 
     @Override
@@ -30,14 +32,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.LinearLayoutContents, MainFragment.newInstance());
-        transaction.commit();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.Toolbar);
+        setSupportActionBar(toolbar);
+
+
+        getTextViewLabel().setText("asdasdsa");
+
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.LinearLayoutContents, MainFragment.newInstance());
+//        transaction.commit();
 
     }
 
+    @Override
+    public void onPatternDetected(List<HsPatternLockView.Cell> pattern, String SimplePattern) {
+        super.onPatternDetected(pattern, SimplePattern);
 
+        doUnLock();
 
+    }
 
     public static class MainFragment extends HsPatternLockFragment implements View.OnClickListener{
 
@@ -63,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             doLock();
 
             //Fragment 잠금해제
-            doUnLock();
+//            doUnLock();
         }
 
         @Override
