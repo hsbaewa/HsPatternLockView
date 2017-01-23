@@ -17,7 +17,7 @@ import kr.co.hs.view.hspatternlockview.R;
  * 패키지명 : kr.co.hs.view.hspatternlockview.app
  */
 
-public class HsPatternLockActivity extends HsActivity implements HsPatternLockView.OnPatternListener{
+public class HsPatternLockActivity extends HsActivity implements IHsPatternLock{
 
     private LinearLayout mLinearLayoutContent;
     private LinearLayout mLinearLayoutPattern;
