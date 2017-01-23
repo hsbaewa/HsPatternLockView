@@ -31,4 +31,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     testCompile 'junit:junit:4.12'
     compile 'com.nineoldandroids:library:2.4.+'
+    compile 'com.github.hsbaewa:HsCommon:+'
 }

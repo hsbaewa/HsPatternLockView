@@ -3,6 +3,18 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/LinearLayoutContents"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+
+
+    <!--
     <kr.co.hs.view.hspatternlockview.HsPatternLockView
         xmlns:lockview="http://schemas.android.com/apk/res-auto"
         android:id="@+id/pattern"
@@ -13,4 +25,5 @@
         lockview:LOCK_COLOR="#fff"
         lockview:WRONG_COLOR="#ff0000"
         lockview:CORRECT_COLOR="#00ff00"/>
+        -->
 </LinearLayout>

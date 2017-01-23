@@ -165,34 +165,42 @@ public class HsPatternLockView extends View {
         Wrong
     }
 
-    /**
-     * The call back abstract class for detecting patterns entered by the user.
-     */
-    public interface OnPatternListener {
-
+    public interface OnPatternStartListener{
         /**
          * A new pattern has begun.
          */
         void onPatternStart();
+    }
 
+    public interface OnPatternClearedListener{
         /**
          * The pattern was cleared.
          */
         void onPatternCleared();
+    }
 
+    public interface OnPatternCellAddedListener{
         /**
          * The user extended the pattern currently being drawn by one cell.
          *
          * @param pattern The pattern with newly added cell.
          */
         void onPatternCellAdded(List<Cell> pattern, String SimplePattern);
+    }
 
+    public interface OnPatternDetectedListener{
         /**
          * A pattern was detected from the user.
          *
          * @param pattern The pattern.
          */
         void onPatternDetected(List<Cell> pattern, String SimplePattern);
+    }
+
+    /**
+     * The call back abstract class for detecting patterns entered by the user.
+     */
+    public interface OnPatternListener extends OnPatternStartListener, OnPatternClearedListener, OnPatternCellAddedListener, OnPatternDetectedListener{
     }
 
 
@@ -228,6 +236,10 @@ public class HsPatternLockView extends View {
     private static final float DRAG_THRESHHOLD = 0.0f;
 
     private OnPatternListener mOnPatternListener;
+    private OnPatternStartListener mOnPatternStartListener;
+    private OnPatternClearedListener mOnPatternClearedListener;
+    private OnPatternCellAddedListener mOnPatternCellAddedListener;
+    private OnPatternDetectedListener mOnPatternDetectedListener;
     private ArrayList<Cell> mPattern = new ArrayList<>(MATRIX_SIZE);
 
     /**
@@ -373,6 +385,22 @@ public class HsPatternLockView extends View {
         mOnPatternListener = onPatternListener;
     }
 
+    public void setOnPatternStartListener(OnPatternStartListener onPatternStartListener) {
+        mOnPatternStartListener = onPatternStartListener;
+    }
+
+    public void setOnPatternClearedListener(OnPatternClearedListener onPatternClearedListener) {
+        mOnPatternClearedListener = onPatternClearedListener;
+    }
+
+    public void setOnPatternCellAddedListener(OnPatternCellAddedListener onPatternCellAddedListener) {
+        mOnPatternCellAddedListener = onPatternCellAddedListener;
+    }
+
+    public void setOnPatternDetectedListener(OnPatternDetectedListener onPatternDetectedListener) {
+        mOnPatternDetectedListener = onPatternDetectedListener;
+    }
+
     /**
      * Retrieves current pattern.
      *
@@ -483,11 +511,17 @@ public class HsPatternLockView extends View {
         if (mOnPatternListener != null) {
             mOnPatternListener.onPatternCellAdded(mPattern, getSimplePattern(mPattern));
         }
+        if(mOnPatternCellAddedListener != null){
+            mOnPatternCellAddedListener.onPatternCellAdded(mPattern, getSimplePattern(mPattern));
+        }
     }
 
     private void notifyPatternStarted() {
         if (mOnPatternListener != null) {
             mOnPatternListener.onPatternStart();
+        }
+        if(mOnPatternStartListener != null){
+            mOnPatternStartListener.onPatternStart();
         }
     }
 
@@ -495,11 +529,17 @@ public class HsPatternLockView extends View {
         if (mOnPatternListener != null) {
             mOnPatternListener.onPatternDetected(mPattern, getSimplePattern(mPattern));
         }
+        if(mOnPatternDetectedListener != null){
+            mOnPatternDetectedListener.onPatternDetected(mPattern, getSimplePattern(mPattern));
+        }
     }
 
     private void notifyPatternCleared() {
         if (mOnPatternListener != null) {
             mOnPatternListener.onPatternCleared();
+        }
+        if(mOnPatternClearedListener != null){
+            mOnPatternClearedListener.onPatternCleared();
         }
     }
 
@@ -1474,5 +1514,18 @@ public class HsPatternLockView extends View {
 
     Interpolator getFastOutSlowInInterpolator() {
         return mFastOutSlowInInterpolator;
+    }
+
+    public void setLockColor(int color){
+        mRegularColor = color;
+        mPathPaint.setColor(mRegularColor);
+    }
+
+    public void setWrongColor(int color){
+        mErrorColor = color;
+    }
+
+    public void setCorrectColor(int color){
+        mSuccessColor = color;
     }
 }
