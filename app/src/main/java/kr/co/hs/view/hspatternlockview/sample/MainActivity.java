@@ -55,14 +55,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCreateView(@Nullable ViewGroup viewGroup, @Nullable Bundle bundle) {
             setContentView(R.layout.fragment_main);
-
             btn = (Button) findViewById(R.id.button);
-
             btn.setOnClickListener(this);
-
             setPatternLockColor(ContextCompat.getColor(getContext(), R.color.colorPink500));
 
+            //Fragment 잠금
             doLock();
+
+            //Fragment 잠금해제
+            doUnLock();
         }
 
         @Override
