@@ -1,13 +1,19 @@
 package kr.co.hs.view.hspatternlockview.app;
 
+import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
 
 import kr.co.hs.app.HsActivity;
+import kr.co.hs.hardware.HsFingerPrintManagerHelper;
 import kr.co.hs.view.hspatternlockview.HsPatternLockView;
 import kr.co.hs.view.hspatternlockview.R;
 
@@ -17,55 +23,67 @@ import kr.co.hs.view.hspatternlockview.R;
  * 패키지명 : kr.co.hs.view.hspatternlockview.app
  */
 
-public class HsPatternLockActivity extends HsActivity implements IHsPatternLock{
+public abstract class HsPatternLockActivity extends HsActivity implements
+        IHsPatternLock,
+        View.OnClickListener,
+        HsFingerPrintManagerHelper.OnAuthenticationErrorListener,
+        HsFingerPrintManagerHelper.OnAuthenticationSucceededListener,
+        HsFingerPrintManagerHelper.OnAuthenticationFailedListener,
+        HsPatternLockView.OnPatternListener
+{
+    LinearLayout mLinearLayoutContents;
+    LinearLayout mLinearLayoutLock;
+    LinearLayout mLinearLayoutFingerPrint;
 
-    private LinearLayout mLinearLayoutContent;
-    private LinearLayout mLinearLayoutPattern;
+    TextView mTextViewLabel;
+    Button mButtonUsePattern;
+    HsPatternLockView mHsPatternLockView;
 
-    private HsPatternLockView mHsPatternLockView;
-    private TextView mTextViewLabel;
 
+
+    private String mCorrectPattern;
+
+    HsFingerPrintManagerHelper mHsFingerPrintManagerHelper;
 
     @Override
-    public void setContentView(int layoutId) {
+    public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(R.layout.fragment_app_patternlockfragment);
-        mLinearLayoutContent = (LinearLayout) findViewById(R.id.LinearLayoutContents);
-        mLinearLayoutPattern = (LinearLayout) findViewById(R.id.LinearLayoutPattern);
+
+        mLinearLayoutContents = (LinearLayout) findViewById(R.id.LinearLayoutContents);
+        mLinearLayoutLock = (LinearLayout) findViewById(R.id.LinearLayoutLock);
+        mLinearLayoutFingerPrint = (LinearLayout) findViewById(R.id.LinearLayoutFingerPrint);
         mTextViewLabel = (TextView) findViewById(R.id.TextViewLabel);
+        mButtonUsePattern = (Button) findViewById(R.id.ButtonUsePattern);
         mHsPatternLockView = (HsPatternLockView) findViewById(R.id.HsPatternLockView);
 
-        if(mLinearLayoutContent != null){
-            View content = LayoutInflater.from(getContext()).inflate(layoutId, mLinearLayoutContent, false);
-            if(content != null){
-                mLinearLayoutContent.removeAllViews();
-                mLinearLayoutContent.addView(content);
-            }
-        }
 
-        if(mHsPatternLockView != null){
-            mHsPatternLockView.setOnPatternListener(this);
-        }
-        doLock();
+        View contentView = LayoutInflater.from(getContext()).inflate(layoutResID, mLinearLayoutContents, false);
+        mLinearLayoutContents.addView(contentView);
+
+        mButtonUsePattern.setOnClickListener(this);
+        mHsPatternLockView.setOnPatternListener(this);
+
+        doUnLock();
     }
 
-    public void doLock(){
-        getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                mLinearLayoutContent.setVisibility(View.GONE);
-                mLinearLayoutPattern.setVisibility(View.VISIBLE);
-            }
-        });
+    private void setVisibleContentsLayout(int visible){
+        if(mLinearLayoutContents.getVisibility() != visible)
+            mLinearLayoutContents.setVisibility(visible);
     }
 
-    public void doUnLock(){
-        getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                mLinearLayoutContent.setVisibility(View.VISIBLE);
-                mLinearLayoutPattern.setVisibility(View.GONE);
-            }
-        });
+    private void setVisibleFingerPrintLayout(int visible){
+        if(mLinearLayoutFingerPrint.getVisibility() != visible)
+            mLinearLayoutFingerPrint.setVisibility(visible);
+    }
+
+    private void setVisibleLockLayout(int visible){
+        if(mLinearLayoutLock.getVisibility() != visible)
+            mLinearLayoutLock.setVisibility(visible);
+    }
+
+    private void setVisiblePattern(int visible){
+        if(mHsPatternLockView.getVisibility() != visible)
+            mHsPatternLockView.setVisibility(visible);
     }
 
 
@@ -73,20 +91,125 @@ public class HsPatternLockActivity extends HsActivity implements IHsPatternLock{
         return mHsPatternLockView;
     }
 
-    public TextView getTextViewLabel() {
-        return mTextViewLabel;
+
+    private void setFingerPrintUI(){
+        setVisibleContentsLayout(View.GONE);
+        setVisibleFingerPrintLayout(View.VISIBLE);
+        setVisibleLockLayout(View.VISIBLE);
+        setVisiblePattern(View.INVISIBLE);
+
+        mTextViewLabel.setText(getLabelMessage(MESSAGE_FINGERPRINT_INIT));
     }
 
-    public void setPatternLockColor(int color){
-        mHsPatternLockView.setLockColor(color);
+    private void setPatternUI(){
+        setVisibleContentsLayout(View.GONE);
+        setVisibleFingerPrintLayout(View.GONE);
+        setVisibleLockLayout(View.VISIBLE);
+        setVisiblePattern(View.VISIBLE);
+
+        mTextViewLabel.setText(getLabelMessage(MESSAGE_PATTERN_INIT));
     }
 
-    public void setPatternWrongColor(int color){
-        mHsPatternLockView.setWrongColor(color);
+    private void setUnLockUI(){
+        setVisibleContentsLayout(View.VISIBLE);
+        setVisibleFingerPrintLayout(View.GONE);
+        setVisibleLockLayout(View.GONE);
+        setVisiblePattern(View.INVISIBLE);
     }
 
-    public void setPatternCorrectColor(int color){
-        mHsPatternLockView.setCorrectColor(color);
+    private void setLabel(final int message){
+        if(mTextViewLabel != null){
+            mTextViewLabel.post(new Runnable() {
+                @Override
+                public void run() {
+                    mTextViewLabel.setText(getLabelMessage(message));
+                }
+            });
+        }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void doFingerPrintLock(){
+
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                setFingerPrintUI();
+            }
+        });
+
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(mHsFingerPrintManagerHelper != null){
+                mHsFingerPrintManagerHelper.stopListening();
+                mHsFingerPrintManagerHelper = null;
+            }
+            mHsFingerPrintManagerHelper = new HsFingerPrintManagerHelper(getContext());
+            mHsFingerPrintManagerHelper.setOnAuthenticationErrorListener(this);
+            mHsFingerPrintManagerHelper.setOnAuthenticationFailedListener(this);
+            mHsFingerPrintManagerHelper.setOnAuthenticationSucceededListener(this);
+
+            mHsFingerPrintManagerHelper.startListening();
+        }
+    }
+
+    public void doPatternLock(String correctPattern){
+        mCorrectPattern = correctPattern;
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                setPatternUI();
+            }
+        });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mHsFingerPrintManagerHelper != null){
+            mHsFingerPrintManagerHelper.stopListening();
+            mHsFingerPrintManagerHelper = null;
+        }
+    }
+
+    public void doUnLock(){
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                setUnLockUI();
+            }
+        });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mHsFingerPrintManagerHelper != null){
+            mHsFingerPrintManagerHelper.stopListening();
+            mHsFingerPrintManagerHelper = null;
+        }
+    }
+
+
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.ButtonUsePattern) {
+            onClickUsePatternButton(v);
+        }
+    }
+
+    @Override
+    public void onAuthenticationError(int i, CharSequence charSequence) {
+        setLabel(MESSAGE_FINGERPRINT_ERROR);
+    }
+
+    @Override
+    public void onAuthenticationFailed() {
+        setLabel(MESSAGE_FINGERPRINT_FAIL);
+    }
+
+    @Override
+    public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult authenticationResult) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mHsFingerPrintManagerHelper != null){
+            mHsFingerPrintManagerHelper.stopListening();
+            mHsFingerPrintManagerHelper = null;
+        }
+        onFingerCorrect();
     }
 
     @Override
@@ -101,7 +224,19 @@ public class HsPatternLockActivity extends HsActivity implements IHsPatternLock{
 
     @Override
     public void onPatternDetected(List<HsPatternLockView.Cell> pattern, String SimplePattern) {
-
+        if(pattern.size() < getPatternSize()){
+            setLabel(MESSAGE_PATTERN_ERROR_PATERNSIZE);
+            mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
+        }else{
+            if(mCorrectPattern != null && mCorrectPattern.equals(SimplePattern)){
+                onPatternCorrect();
+                setLabel(MESSAGE_PATTERN_SUCCESS);
+                mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Correct);
+            }else{
+                setLabel(MESSAGE_PATTERN_FAIL);
+                mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
+            }
+        }
     }
 
     @Override

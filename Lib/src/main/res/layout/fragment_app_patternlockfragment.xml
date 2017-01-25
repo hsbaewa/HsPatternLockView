@@ -1,43 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:lockview="http://schemas.android.com/apk/res-auto"
-             android:orientation="vertical"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
     <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/LinearLayoutContents"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        >
+        android:layout_height="match_parent">
 
     </LinearLayout>
+
 
     <LinearLayout
-        android:id="@+id/LinearLayoutPattern"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/LinearLayoutLock"
         android:orientation="vertical"
-        >
-        <TextView
-            android:id="@+id/TextViewLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
-            android:gravity="center"
-            />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <kr.co.hs.view.hspatternlockview.HsPatternLockView
-            android:id="@+id/HsPatternLockView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:foregroundGravity="bottom"
-            lockview:LOCK_COLOR="@color/colorLock"
-            lockview:WRONG_COLOR="@color/colorFailed"
-            lockview:CORRECT_COLOR="@color/colorSuccess"
-            />
+            android:layout_weight="1"
+            android:gravity="center"
+            >
+
+            <TextView
+                android:id="@+id/TextViewLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15dp"
+                />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            >
+
+            <LinearLayout
+                android:id="@+id/LinearLayoutFingerPrint"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                >
+                <ImageView
+                    android:id="@+id/ImageViewFingerPrint"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_fp"
+                    android:scaleType="center"
+                    />
+
+                <Button
+                    android:id="@+id/ButtonUsePattern"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/UsePattern"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="center"
+                    android:background="@color/colorTransparent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    />
+
+            </LinearLayout>
+
+
+
+            <kr.co.hs.view.hspatternlockview.HsPatternLockView
+                xmlns:lockview="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/HsPatternLockView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center"
+                lockview:LOCK_COLOR="@color/colorGrey700"
+                lockview:WRONG_COLOR="@color/colorRed500"
+                lockview:CORRECT_COLOR="@color/colorGreen300"/>
+
+        </FrameLayout>
 
     </LinearLayout>
+
+
+
 </FrameLayout>

@@ -1,6 +1,8 @@
 package kr.co.hs.view.hspatternlockview.app;
 
-import android.widget.TextView;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.view.View;
 
 import kr.co.hs.view.hspatternlockview.HsPatternLockView;
 
@@ -11,13 +13,28 @@ import kr.co.hs.view.hspatternlockview.HsPatternLockView;
  */
 
 public interface IHsPatternLock extends HsPatternLockView.OnPatternListener {
+    int MESSAGE_PATTERN_INIT = 100;
+    int MESSAGE_PATTERN_SUCCESS = 101;
+    int MESSAGE_PATTERN_FAIL = 102;
+    int MESSAGE_PATTERN_ERROR_PATERNSIZE = 103;
+    int MESSAGE_FINGERPRINT_INIT = 200;
+    int MESSAGE_FINGERPRINT_SUCCESS = 201;
+    int MESSAGE_FINGERPRINT_ERROR = 202;
+    int MESSAGE_FINGERPRINT_FAIL = 203;
 
-    void setContentView(int layoutId);
-    void doLock();
-    void doUnLock();
+
     HsPatternLockView getHsPatternLockView();
-    TextView getTextViewLabel();
-    void setPatternLockColor(int color);
-    void setPatternWrongColor(int color);
-    void setPatternCorrectColor(int color);
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    void doFingerPrintLock();
+    void doPatternLock(String correctPattern);
+    void doUnLock();
+
+    String getLabelMessage(int messageType);
+    void onClickUsePatternButton(View view);
+    void onPatternCorrect();
+    void onFingerCorrect();
+    int getPatternSize();
 }

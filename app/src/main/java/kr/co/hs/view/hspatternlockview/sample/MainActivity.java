@@ -1,22 +1,13 @@
 package kr.co.hs.view.hspatternlockview.sample;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import java.util.List;
-
-import kr.co.hs.view.hspatternlockview.HsPatternLockView;
 import kr.co.hs.view.hspatternlockview.app.HsPatternLockActivity;
-import kr.co.hs.view.hspatternlockview.app.HsPatternLockFragment;
 
 /**
  * 생성된 시간 2017-01-12, Bae 에 의해 생성됨
@@ -27,6 +18,7 @@ import kr.co.hs.view.hspatternlockview.app.HsPatternLockFragment;
 public class MainActivity extends HsPatternLockActivity {
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,23 +27,37 @@ public class MainActivity extends HsPatternLockActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.Toolbar);
         setSupportActionBar(toolbar);
 
-
-        getTextViewLabel().setText("asdasdsa");
-
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.LinearLayoutContents, MainFragment.newInstance());
-//        transaction.commit();
-
+        doFingerPrintLock();
     }
 
     @Override
-    public void onPatternDetected(List<HsPatternLockView.Cell> pattern, String SimplePattern) {
-        super.onPatternDetected(pattern, SimplePattern);
-
-        doUnLock();
-
+    public String getLabelMessage(int messageType) {
+        return "라벨";
     }
 
+    @Override
+    public void onClickUsePatternButton(View view) {
+        doPatternLock("1234");
+    }
+
+    @Override
+    public void onPatternCorrect() {
+        doUnLock();
+    }
+
+    @Override
+    public void onFingerCorrect() {
+        doUnLock();
+    }
+
+    @Override
+    public int getPatternSize() {
+        return 4;
+    }
+
+
+
+    /*
     public static class MainFragment extends HsPatternLockFragment implements View.OnClickListener{
 
         public static MainFragment newInstance() {
@@ -97,4 +103,5 @@ public class MainActivity extends HsPatternLockActivity {
             doUnLock();
         }
     }
+    */
 }
