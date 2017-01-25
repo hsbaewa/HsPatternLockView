@@ -1,40 +1,46 @@
 # HsPatternLockView
 
-1. Fragment 추가
-<pre><code>
-public class MainFragment extends HsPatternLockFragment{
-    @Override
-    public void onCreateView(@Nullable ViewGroup viewGroup, @Nullable Bundle bundle) {
-            //Activity에서 방식과 마찬가지로 메인 레이아웃 추가
-            setContentView(R.layout.fragment_main);
-
-            //Fragment 잠금
-            doLock();
-    }
-
-    .
-    .
-
-    Override
-    public void onPatternDetected(List<HsPatternLockView.Cell> pattern, String SimplePattern) {
-        super.onPatternDetected(pattern, SimplePattern);
-        //패턴 일치 체크 후 잠금 해제
-        doUnLock();
-    }
-}
-</code></pre>
-
-2. Activity 추가
+1. Activity,Fragment에서 상속하여 사용
 <pre><code>
 //HsPatternLockActivity 상속
 public class MainActivity extends HsPatternLockActivity {
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    public void onPatternDetected(List<HsPatternLockView.Cell> pattern, String SimplePattern) {
-        super.onPatternDetected(pattern, SimplePattern);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sample);
 
-        //패턴 일치 체크 후 잠금 해제
+        Toolbar toolbar = (Toolbar) findViewById(R.id.Toolbar);
+        setSupportActionBar(toolbar);
+
+        doFingerPrintLock();
+    }
+
+    @Override
+    public String getLabelMessage(int messageType) {
+        return "라벨";
+    }
+
+    @Override
+    public void onClickUsePatternButton(View view) {
+        doPatternLock("1234");
+    }
+
+    @Override
+    public void onPatternCorrect() {
         doUnLock();
+    }
 
+    @Override
+    public void onFingerCorrect() {
+        doUnLock();
+    }
+
+    @Override
+    public int getPatternSize() {
+        return 4;
     }
 }
 </code></pre>
