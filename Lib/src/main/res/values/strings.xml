@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Lib</string>
+    <string name="UsePattern">패턴사용</string>
 </resources>
