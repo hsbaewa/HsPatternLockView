@@ -221,7 +221,7 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
 
     @Override
     public boolean isLock() {
-        if(mLinearLayoutFingerPrint.getVisibility() == View.GONE){
+        if(mLinearLayoutLock.getVisibility() == View.GONE){
             return false;
         }else{
             return true;
