@@ -1,5 +1,6 @@
 package kr.co.hs.view.hspatternlockview.app;
 
+import android.Manifest;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.support.annotation.LayoutRes;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import kr.co.hs.app.HsActivity;
+import kr.co.hs.content.HsPermissionChecker;
 import kr.co.hs.hardware.HsFingerPrintManagerHelper;
 import kr.co.hs.view.hspatternlockview.HsPatternLockView;
 import kr.co.hs.view.hspatternlockview.R;
@@ -79,13 +81,15 @@ public abstract class HsPatternLockActivity extends HsActivity implements
     }
 
     private void setVisibleLockLayout(int visible){
-        if(mLinearLayoutLock.getVisibility() != visible)
+        if(mLinearLayoutLock.getVisibility() != visible){
             mLinearLayoutLock.setVisibility(visible);
+        }
     }
 
     private void setVisiblePattern(int visible){
-        if(mHsPatternLockView.getVisibility() != visible)
+        if(mHsPatternLockView.getVisibility() != visible){
             mHsPatternLockView.setVisibility(visible);
+        }
     }
 
 
@@ -112,13 +116,18 @@ public abstract class HsPatternLockActivity extends HsActivity implements
         mTextViewLabel.setText(getLabelMessage(MESSAGE_PATTERN_INIT));
     }
 
-    private void setPatternUI(String label){
+    private void setPatternUI(final String label){
         setVisibleContentsLayout(View.GONE);
         setVisibleFingerPrintLayout(View.GONE);
         setVisibleLockLayout(View.VISIBLE);
         setVisiblePattern(View.VISIBLE);
 
-        mTextViewLabel.setText(label);
+        mTextViewLabel.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextViewLabel.setText(label);
+            }
+        });
     }
 
     private void setUnLockUI(){
@@ -142,11 +151,12 @@ public abstract class HsPatternLockActivity extends HsActivity implements
 
     //지문 사용 가능한지 확인 하는 함수
     public boolean isAbleFingerPrint(){
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            return false;
-
-        boolean isAble = getPackageManager().hasSystemFeature(FINGERPRINT_SERVICE);
-        if(isAble)
+        FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
+        int granted = HsPermissionChecker.checkSelfPermission(getContext(), Manifest.permission.USE_FINGERPRINT);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                granted == HsPermissionChecker.PERMISSION_GRANTED &&
+                fingerprintManager.isHardwareDetected() &&
+                fingerprintManager.hasEnrolledFingerprints())
             return true;
         else
             return false;
@@ -228,6 +238,49 @@ public abstract class HsPatternLockActivity extends HsActivity implements
     }
 
     @Override
+    public void clearPattern() {
+        mHsPatternLockView.post(new Runnable() {
+            @Override
+            public void run() {
+                mHsPatternLockView.clearPattern();
+            }
+        });
+    }
+
+    @Override
+    public void setDisplayMode(int mode) {
+        switch (mode){
+            case DISPLAYMODE_ANIMATE:{
+                mHsPatternLockView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Animate);
+                    }
+                });
+                break;
+            }
+            case DISPLAYMODE_CORRECT:{
+                mHsPatternLockView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Correct);
+                    }
+                });
+                break;
+            }
+            case DISPLAYMODE_WRONG:{
+                mHsPatternLockView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
+                    }
+                });
+                break;
+            }
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.ButtonUsePattern) {
@@ -271,14 +324,15 @@ public abstract class HsPatternLockActivity extends HsActivity implements
             mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
         }else{
             if(mOnPatternLockOneShotListener != null){
+                OnPatternLockOneShotListener tempOnPatternLockOneShotListener = mOnPatternLockOneShotListener;
+                mOnPatternLockOneShotListener = null;
                 getHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         setUnLockUI();
                     }
                 });
-                mOnPatternLockOneShotListener.onPatternLockResult(SimplePattern);
-                mOnPatternLockOneShotListener = null;
+                tempOnPatternLockOneShotListener.onPatternLockResult(SimplePattern);
             }else{
                 if(mCorrectPattern != null && mCorrectPattern.equals(SimplePattern)){
                     onPatternCorrect();

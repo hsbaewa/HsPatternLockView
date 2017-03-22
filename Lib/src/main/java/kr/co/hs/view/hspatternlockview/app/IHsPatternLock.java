@@ -22,6 +22,10 @@ public interface IHsPatternLock extends HsPatternLockView.OnPatternListener {
     int MESSAGE_FINGERPRINT_ERROR = 202;
     int MESSAGE_FINGERPRINT_FAIL = 203;
 
+    int DISPLAYMODE_WRONG = 1000;
+    int DISPLAYMODE_CORRECT = 1001;
+    int DISPLAYMODE_ANIMATE = 1002;
+
 
     HsPatternLockView getHsPatternLockView();
 
@@ -33,6 +37,8 @@ public interface IHsPatternLock extends HsPatternLockView.OnPatternListener {
     void doUnLock();
     void doPatternLockOneShot(String label, OnPatternLockOneShotListener listener);
     boolean isLock();
+    void clearPattern();
+    void setDisplayMode(int mode);
 
     String getLabelMessage(int messageType);
     void onClickUsePatternButton(View view);
