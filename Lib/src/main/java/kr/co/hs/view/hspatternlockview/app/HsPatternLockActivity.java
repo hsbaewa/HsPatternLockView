@@ -45,6 +45,8 @@ public abstract class HsPatternLockActivity extends HsActivity implements
 
     HsFingerPrintManagerHelper mHsFingerPrintManagerHelper;
 
+    OnPatternLockOneShotListener mOnPatternLockOneShotListener;
+
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(R.layout.fragment_app_patternlockfragment);
@@ -108,6 +110,15 @@ public abstract class HsPatternLockActivity extends HsActivity implements
         setVisiblePattern(View.VISIBLE);
 
         mTextViewLabel.setText(getLabelMessage(MESSAGE_PATTERN_INIT));
+    }
+
+    private void setPatternUI(String label){
+        setVisibleContentsLayout(View.GONE);
+        setVisibleFingerPrintLayout(View.GONE);
+        setVisibleLockLayout(View.VISIBLE);
+        setVisiblePattern(View.VISIBLE);
+
+        mTextViewLabel.setText(label);
     }
 
     private void setUnLockUI(){
@@ -196,7 +207,16 @@ public abstract class HsPatternLockActivity extends HsActivity implements
         }
     }
 
-
+    @Override
+    public void doPatternLockOneShot(final String label, OnPatternLockOneShotListener listener) {
+        mOnPatternLockOneShotListener = listener;
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                setPatternUI(label);
+            }
+        });
+    }
 
     @Override
     public void onClick(View v) {
@@ -241,13 +261,24 @@ public abstract class HsPatternLockActivity extends HsActivity implements
             setLabel(MESSAGE_PATTERN_ERROR_PATERNSIZE);
             mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
         }else{
-            if(mCorrectPattern != null && mCorrectPattern.equals(SimplePattern)){
-                onPatternCorrect();
-                setLabel(MESSAGE_PATTERN_SUCCESS);
-                mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Correct);
+            if(mOnPatternLockOneShotListener != null){
+                getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setUnLockUI();
+                    }
+                });
+                mOnPatternLockOneShotListener.onPatternLockResult(SimplePattern);
+                mOnPatternLockOneShotListener = null;
             }else{
-                setLabel(MESSAGE_PATTERN_FAIL);
-                mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
+                if(mCorrectPattern != null && mCorrectPattern.equals(SimplePattern)){
+                    onPatternCorrect();
+                    setLabel(MESSAGE_PATTERN_SUCCESS);
+                    mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Correct);
+                }else{
+                    setLabel(MESSAGE_PATTERN_FAIL);
+                    mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
+                }
             }
         }
     }

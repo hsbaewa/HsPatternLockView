@@ -31,6 +31,7 @@ public interface IHsPatternLock extends HsPatternLockView.OnPatternListener {
     void doFingerPrintLock();
     void doPatternLock(String correctPattern);
     void doUnLock();
+    void doPatternLockOneShot(String label, OnPatternLockOneShotListener listener);
 
     String getLabelMessage(int messageType);
     void onClickUsePatternButton(View view);

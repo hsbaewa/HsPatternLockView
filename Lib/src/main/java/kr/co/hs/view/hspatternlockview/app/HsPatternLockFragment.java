@@ -45,6 +45,8 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
 
     HsFingerPrintManagerHelper mHsFingerPrintManagerHelper;
 
+    OnPatternLockOneShotListener mOnPatternLockOneShotListener;
+
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(R.layout.fragment_app_patternlockfragment);
@@ -64,18 +66,6 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
         mHsPatternLockView.setOnPatternListener(this);
 
         doUnLock();
-    }
-
-    //지문 사용 가능한지 확인 하는 함수
-    public boolean isAbleFingerPrint(){
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            return false;
-
-        boolean isAble = getPackageManager().hasSystemFeature(FINGERPRINT_SERVICE);
-        if(isAble)
-            return true;
-        else
-            return false;
     }
 
     private void setVisibleContentsLayout(int visible){
@@ -122,6 +112,15 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
         mTextViewLabel.setText(getLabelMessage(MESSAGE_PATTERN_INIT));
     }
 
+    private void setPatternUI(String label){
+        setVisibleContentsLayout(View.GONE);
+        setVisibleFingerPrintLayout(View.GONE);
+        setVisibleLockLayout(View.VISIBLE);
+        setVisiblePattern(View.VISIBLE);
+
+        mTextViewLabel.setText(label);
+    }
+
     private void setUnLockUI(){
         setVisibleContentsLayout(View.VISIBLE);
         setVisibleFingerPrintLayout(View.GONE);
@@ -138,6 +137,19 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
                 }
             });
         }
+    }
+
+
+    //지문 사용 가능한지 확인 하는 함수
+    public boolean isAbleFingerPrint(){
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return false;
+
+        boolean isAble = getPackageManager().hasSystemFeature(FINGERPRINT_SERVICE);
+        if(isAble)
+            return true;
+        else
+            return false;
     }
 
 
@@ -195,7 +207,16 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
         }
     }
 
-
+    @Override
+    public void doPatternLockOneShot(final String label, OnPatternLockOneShotListener listener) {
+        mOnPatternLockOneShotListener = listener;
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                setPatternUI(label);
+            }
+        });
+    }
 
     @Override
     public void onClick(View v) {
@@ -240,13 +261,24 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
             setLabel(MESSAGE_PATTERN_ERROR_PATERNSIZE);
             mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
         }else{
-            if(mCorrectPattern != null && mCorrectPattern.equals(SimplePattern)){
-                onPatternCorrect();
-                setLabel(MESSAGE_PATTERN_SUCCESS);
-                mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Correct);
+            if(mOnPatternLockOneShotListener != null){
+                getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setUnLockUI();
+                    }
+                });
+                mOnPatternLockOneShotListener.onPatternLockResult(SimplePattern);
+                mOnPatternLockOneShotListener = null;
             }else{
-                setLabel(MESSAGE_PATTERN_FAIL);
-                mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
+                if(mCorrectPattern != null && mCorrectPattern.equals(SimplePattern)){
+                    onPatternCorrect();
+                    setLabel(MESSAGE_PATTERN_SUCCESS);
+                    mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Correct);
+                }else{
+                    setLabel(MESSAGE_PATTERN_FAIL);
+                    mHsPatternLockView.setDisplayMode(HsPatternLockView.DisplayMode.Wrong);
+                }
             }
         }
     }

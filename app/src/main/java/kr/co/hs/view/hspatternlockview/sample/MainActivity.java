@@ -4,10 +4,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import kr.co.hs.view.hspatternlockview.app.HsPatternLockActivity;
+import kr.co.hs.view.hspatternlockview.app.OnPatternLockOneShotListener;
 
 /**
  * 생성된 시간 2017-01-12, Bae 에 의해 생성됨
@@ -24,13 +25,21 @@ public class MainActivity extends HsPatternLockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.Toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.Toolbar);
+//        setSupportActionBar(toolbar);
+//
+//        if(isAbleFingerPrint())
+//            doFingerPrintLock();
+//        else
+//            doPatternLock("1234");
 
-        if(isAbleFingerPrint())
-            doFingerPrintLock();
-        else
-            doPatternLock("1234");
+        doPatternLockOneShot("저장할 패턴 입력",new OnPatternLockOneShotListener() {
+            @Override
+            public void onPatternLockResult(String pattern) {
+                Log.d("asd","aasd");
+            }
+        });
+
     }
 
     @Override
