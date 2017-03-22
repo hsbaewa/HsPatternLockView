@@ -27,7 +27,10 @@ public class MainActivity extends HsPatternLockActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.Toolbar);
         setSupportActionBar(toolbar);
 
-        doFingerPrintLock();
+        if(isAbleFingerPrint())
+            doFingerPrintLock();
+        else
+            doPatternLock("1234");
     }
 
     @Override

@@ -17,6 +17,8 @@ import kr.co.hs.hardware.HsFingerPrintManagerHelper;
 import kr.co.hs.view.hspatternlockview.HsPatternLockView;
 import kr.co.hs.view.hspatternlockview.R;
 
+import static android.content.Context.FINGERPRINT_SERVICE;
+
 /**
  * 생성된 시간 2017-01-23, Bae 에 의해 생성됨
  * 프로젝트 이름 : HsPatternLockView
@@ -62,6 +64,18 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
         mHsPatternLockView.setOnPatternListener(this);
 
         doUnLock();
+    }
+
+    //지문 사용 가능한지 확인 하는 함수
+    public boolean isAbleFingerPrint(){
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return false;
+
+        boolean isAble = getPackageManager().hasSystemFeature(FINGERPRINT_SERVICE);
+        if(isAble)
+            return true;
+        else
+            return false;
     }
 
     private void setVisibleContentsLayout(int visible){

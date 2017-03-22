@@ -129,6 +129,19 @@ public abstract class HsPatternLockActivity extends HsActivity implements
     }
 
 
+    //지문 사용 가능한지 확인 하는 함수
+    public boolean isAbleFingerPrint(){
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return false;
+
+        boolean isAble = getPackageManager().hasSystemFeature(FINGERPRINT_SERVICE);
+        if(isAble)
+            return true;
+        else
+            return false;
+    }
+
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void doFingerPrintLock(){
 
