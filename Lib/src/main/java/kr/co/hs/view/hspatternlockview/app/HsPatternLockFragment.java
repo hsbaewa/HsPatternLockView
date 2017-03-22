@@ -218,6 +218,16 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
         });
     }
 
+
+    @Override
+    public boolean isLock() {
+        if(mLinearLayoutFingerPrint.getVisibility() == View.GONE){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     @Override
     public void onClick(View v) {
         int i = v.getId();

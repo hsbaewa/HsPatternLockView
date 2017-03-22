@@ -219,6 +219,15 @@ public abstract class HsPatternLockActivity extends HsActivity implements
     }
 
     @Override
+    public boolean isLock() {
+        if(mLinearLayoutFingerPrint.getVisibility() == View.GONE){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.ButtonUsePattern) {
