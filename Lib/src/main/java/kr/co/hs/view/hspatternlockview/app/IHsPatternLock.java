@@ -38,6 +38,7 @@ public interface IHsPatternLock extends HsPatternLockView.OnPatternListener {
     void doPatternLockOneShot(String label, OnPatternLockOneShotListener listener);
     boolean isLock();
     void clearPattern();
+    void clearPattern(long delay);
     void setDisplayMode(int mode);
 
     String getLabelMessage(int messageType);

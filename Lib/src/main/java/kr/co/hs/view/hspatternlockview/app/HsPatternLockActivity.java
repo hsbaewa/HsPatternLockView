@@ -3,6 +3,7 @@ package kr.co.hs.view.hspatternlockview.app;
 import android.Manifest;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
+import android.os.Message;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import kr.co.hs.HsHandler;
 import kr.co.hs.app.HsActivity;
 import kr.co.hs.content.HsPermissionChecker;
 import kr.co.hs.hardware.HsFingerPrintManagerHelper;
@@ -48,6 +50,19 @@ public abstract class HsPatternLockActivity extends HsActivity implements
     HsFingerPrintManagerHelper mHsFingerPrintManagerHelper;
 
     OnPatternLockOneShotListener mOnPatternLockOneShotListener;
+
+    HsHandler mHsHandler = new HsHandler(new HsHandler.OnHandleMessage() {
+        @Override
+        public boolean handleMessage(Message message) {
+            switch (message.what){
+                case 100:{
+                    mHsPatternLockView.clearPattern();
+                    return true;
+                }
+            }
+            return false;
+        }
+    });
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
@@ -239,12 +254,16 @@ public abstract class HsPatternLockActivity extends HsActivity implements
 
     @Override
     public void clearPattern() {
-        mHsPatternLockView.post(new Runnable() {
-            @Override
-            public void run() {
-                mHsPatternLockView.clearPattern();
-            }
-        });
+        Message message = mHsHandler.obtainMessage();
+        message.what = 100;
+        mHsHandler.sendMessage(message);
+    }
+
+    @Override
+    public void clearPattern(long delay) {
+        Message message = mHsHandler.obtainMessage();
+        message.what = 100;
+        mHsHandler.sendMessageDelayed(message, delay);
     }
 
     @Override
@@ -309,7 +328,7 @@ public abstract class HsPatternLockActivity extends HsActivity implements
 
     @Override
     public void onPatternCellAdded(List<HsPatternLockView.Cell> pattern, String SimplePattern) {
-
+        mHsHandler.removeMessages(100);
     }
 
     @Override
