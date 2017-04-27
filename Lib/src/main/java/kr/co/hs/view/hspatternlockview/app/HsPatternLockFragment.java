@@ -3,10 +3,13 @@ package kr.co.hs.view.hspatternlockview.app;
 import android.Manifest;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,7 +53,7 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
     OnPatternLockOneShotListener mOnPatternLockOneShotListener;
 
     @Override
-    public void setContentView(@LayoutRes int layoutResID) {
+    public void onCreateView(@Nullable ViewGroup viewGroup, @Nullable Bundle bundle) {
         super.setContentView(R.layout.fragment_app_patternlockfragment);
 
         mLinearLayoutContents = (LinearLayout) findViewById(R.id.LinearLayoutContents);
@@ -60,34 +63,38 @@ public abstract class HsPatternLockFragment extends HsFragment implements IHsPat
         mButtonUsePattern = (Button) findViewById(R.id.ButtonUsePattern);
         mHsPatternLockView = (HsPatternLockView) findViewById(R.id.HsPatternLockView);
 
-
-        View contentView = LayoutInflater.from(getContext()).inflate(layoutResID, mLinearLayoutContents, false);
-        mLinearLayoutContents.addView(contentView);
-
         mButtonUsePattern.setOnClickListener(this);
         mHsPatternLockView.setOnPatternListener(this);
 
         doUnLock();
     }
 
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        View contentView = LayoutInflater.from(getContext()).inflate(layoutResID, mLinearLayoutContents, false);
+        mLinearLayoutContents.addView(contentView);
+
+        doUnLock();
+    }
+
     private void setVisibleContentsLayout(int visible){
-        if(mLinearLayoutContents.getVisibility() != visible)
+        if(mLinearLayoutContents != null && mLinearLayoutContents.getVisibility() != visible)
             mLinearLayoutContents.setVisibility(visible);
     }
 
     private void setVisibleFingerPrintLayout(int visible){
-        if(mLinearLayoutFingerPrint.getVisibility() != visible)
+        if(mLinearLayoutFingerPrint != null && mLinearLayoutFingerPrint.getVisibility() != visible)
             mLinearLayoutFingerPrint.setVisibility(visible);
     }
 
     private void setVisibleLockLayout(int visible){
-        if(mLinearLayoutLock.getVisibility() != visible){
+        if(mLinearLayoutLock != null && mLinearLayoutLock.getVisibility() != visible){
             mLinearLayoutLock.setVisibility(visible);
         }
     }
 
     private void setVisiblePattern(int visible){
-        if(mHsPatternLockView.getVisibility() != visible){
+        if(mHsPatternLockView != null && mHsPatternLockView.getVisibility() != visible){
             mHsPatternLockView.setVisibility(visible);
         }
     }
